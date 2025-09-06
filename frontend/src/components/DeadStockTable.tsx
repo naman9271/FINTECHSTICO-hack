@@ -17,7 +17,7 @@ interface DeadStockItem {
 }
 
 interface DeadStockTableProps {
-  items: DeadStockItem[];
+  items: DeadStockItem[] | null | undefined;
 }
 
 export default function DeadStockTable({ items }: DeadStockTableProps) {
@@ -27,6 +27,20 @@ export default function DeadStockTable({ items }: DeadStockTableProps) {
     if (!dateString) return 'Never';
     return new Date(dateString).toLocaleDateString('en-US');
   };
+
+  // Return empty table if no items
+  if (!items || items.length === 0) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Dead Stock Items
+          </Typography>
+          <Typography>No dead stock items found.</Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const getRiskLevel = (days: number | null) => {
     if (!days) return { label: 'Critical', color: 'error' as const };

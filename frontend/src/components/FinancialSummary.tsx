@@ -3,18 +3,31 @@
 import { Grid, Card, CardContent, Typography } from '@mui/material';
 
 interface FinancialSummary {
-  total_dead_stock_value: number;
-  total_items: number;
-  estimated_total_monthly_storage_cost: number;
-  potential_profit_loss: number;
+  totalDeadStockValue: number;
+  totalItems: number;
+  estimatedTotalMonthlyStorageCost: number;
+  potentialProfitLoss: number;
 }
 
 interface FinancialSummaryComponentProps {
-  summary: FinancialSummary;
+  summary: FinancialSummary | null | undefined;
 }
 
 export default function FinancialSummaryComponent({ summary }: FinancialSummaryComponentProps) {
   const formatCurrency = (amount: number) => `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Return empty fragment if no summary data
+  if (!summary) {
+    return <></>;
+  }
+
+  // Provide default values in case some properties are missing
+  const safeData = {
+    totalDeadStockValue: summary.totalDeadStockValue || 0,
+    totalItems: summary.totalItems || 0,
+    estimatedTotalMonthlyStorageCost: summary.estimatedTotalMonthlyStorageCost || 0,
+    potentialProfitLoss: summary.potentialProfitLoss || 0,
+  };
 
   return (
     <>
@@ -25,7 +38,7 @@ export default function FinancialSummaryComponent({ summary }: FinancialSummaryC
               Total Dead Stock Value
             </Typography>
             <Typography variant="h4" component="div" color="error">
-              {formatCurrency(summary.total_dead_stock_value)}
+              {formatCurrency(safeData.totalDeadStockValue)}
             </Typography>
           </CardContent>
         </Card>
@@ -38,7 +51,7 @@ export default function FinancialSummaryComponent({ summary }: FinancialSummaryC
               Total Items
             </Typography>
             <Typography variant="h4" component="div">
-              {summary.total_items.toLocaleString()}
+              {safeData.totalItems.toLocaleString()}
             </Typography>
           </CardContent>
         </Card>
@@ -51,7 +64,7 @@ export default function FinancialSummaryComponent({ summary }: FinancialSummaryC
               Monthly Storage Cost
             </Typography>
             <Typography variant="h4" component="div" color="warning.main">
-              {formatCurrency(summary.estimated_total_monthly_storage_cost)}
+              {formatCurrency(safeData.estimatedTotalMonthlyStorageCost)}
             </Typography>
           </CardContent>
         </Card>
@@ -64,7 +77,7 @@ export default function FinancialSummaryComponent({ summary }: FinancialSummaryC
               Potential Profit Loss
             </Typography>
             <Typography variant="h4" component="div" color="error">
-              {formatCurrency(summary.potential_profit_loss)}
+              {formatCurrency(safeData.potentialProfitLoss)}
             </Typography>
           </CardContent>
         </Card>

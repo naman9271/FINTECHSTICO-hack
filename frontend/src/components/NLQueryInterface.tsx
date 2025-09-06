@@ -6,9 +6,19 @@ import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+interface QueryResult {
+  success: boolean;
+  data?: {
+    results?: Array<Record<string, unknown>>;
+    sql?: string;
+    explanation?: string;
+  };
+  error?: string;
+}
+
 export default function NLQueryInterface() {
   const [query, setQuery] = useState('');
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<QueryResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,19 +34,20 @@ export default function NLQueryInterface() {
       } else {
         setResult(response.data);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setError('An error occurred while processing your query.');
+      console.error('Query error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   const renderTable = () => {
-    if (!result || !result.results || result.results.length === 0) {
+    if (!result || !result.data?.results || result.data.results.length === 0) {
       return <Typography>No results found.</Typography>;
     }
 
-    const headers = Object.keys(result.results[0]);
+    const headers = Object.keys(result.data.results[0]);
 
     return (
       <TableContainer component={Paper}>
@@ -47,7 +58,7 @@ export default function NLQueryInterface() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {result.results.map((row: any, index: number) => (
+            {result.data.results.map((row: Record<string, unknown>, index: number) => (
               <TableRow key={index}>
                 {headers.map(header => <TableCell key={header}>{String(row[header])}</TableCell>)}
               </TableRow>
@@ -62,7 +73,7 @@ export default function NLQueryInterface() {
     <Box sx={{ mt: 4 }}>
       <Typography variant="h5" gutterBottom>Ask a Question</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Try questions like: "Show me the top 5 most expensive products" or "Which products had no sales in the last 90 days?"
+        Try questions like: &quot;Show me the top 5 most expensive products&quot; or &quot;Which products had no sales in the last 90 days?&quot;
       </Typography>
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
@@ -81,9 +92,11 @@ export default function NLQueryInterface() {
       {result && (
         <Box sx={{ mt: 4 }}>
           <Typography variant="h6">Results</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontFamily: 'monospace', p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
-            Generated SQL: {result.sql_query}
-          </Typography>
+          {result.data?.sql && (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontFamily: 'monospace', p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
+              Generated SQL: {result.data.sql}
+            </Typography>
+          )}
           {renderTable()}
         </Box>
       )}

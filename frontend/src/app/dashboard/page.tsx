@@ -36,13 +36,45 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+interface ApiResponse {
+  success: boolean;
+  data: {
+    summary: {
+      totalDeadStockValue: number;
+      totalItems: number;
+      estimatedTotalMonthlyStorageCost: number;
+      potentialProfitLoss: number;
+    };
+    items: Array<{
+      productId: string;
+      sku: string;
+      productName: string;
+      category: string;
+      purchasePrice: number;
+      sellingPrice: number;
+      quantity: number;
+      totalValue: number;
+      lastSaleDate: string | null;
+      daysSinceLastSale: number | null;
+      monthlyStorageCost: number;
+    }>;
+  };
+}
+
 export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tabValue, setTabValue] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -58,15 +90,20 @@ export default function Dashboard() {
       }
     };
     fetchData();
-  }, []);
+  }, [mounted]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
+  // Prevent hydration issues by not rendering until mounted
+  if (!mounted) {
+    return null;
+  }
+
   if (loading) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4, display: 'flex', justifyContent: 'center' }}>
+      <Container maxWidth="xl" style={{ marginTop: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Container>
     );
@@ -74,7 +111,7 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="xl" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
         <Alert severity="error">{error}</Alert>
       </Container>
     );
@@ -82,7 +119,7 @@ export default function Dashboard() {
 
   if (!data) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="xl" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
         <Typography>No data available.</Typography>
       </Container>
     );
@@ -92,14 +129,14 @@ export default function Dashboard() {
     <>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
             Smart Dead Stock Management Platform
           </Typography>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Container maxWidth="xl" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+        <Box style={{ borderBottom: '1px solid #e0e0e0' }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="dashboard tabs">
             <Tab label="Dashboard Overview" />
             <Tab label="Ask Questions" />
@@ -112,20 +149,20 @@ export default function Dashboard() {
           </Typography>
           <Grid container spacing={3}>
             {/* Financial Summary Cards */}
-            <FinancialSummaryComponent summary={data.summary} />
+            {data?.data?.summary && <FinancialSummaryComponent summary={data.data.summary} />}
 
             {/* Chart */}
             <Grid item xs={12}>
               <Card>
                 <CardContent>
-                  <DeadStockValueChart data={data.items} />
+                  {data?.data?.items && <DeadStockValueChart data={data.data.items} />}
                 </CardContent>
               </Card>
             </Grid>
 
             {/* Dead Stock Table */}
             <Grid item xs={12}>
-              <DeadStockTable items={data.items} />
+              {data?.data?.items && <DeadStockTable items={data.data.items} />}
             </Grid>
           </Grid>
         </TabPanel>

@@ -4,28 +4,40 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Typography } from '@mui/material';
 
 interface DeadStockItem {
-  product_id: number;
+  productId: string;
   sku: string;
-  product_name: string;
+  productName: string;
   category: string;
-  purchase_price: number;
-  selling_price: number;
+  purchasePrice: number;
+  sellingPrice: number;
   quantity: number;
-  total_value: number;
-  last_sale_date: string | null;
-  days_since_last_sale: number | null;
-  estimated_monthly_storage_cost: number;
+  totalValue: number;
+  lastSaleDate: string | null;
+  daysSinceLastSale: number | null;
+  monthlyStorageCost: number;
 }
 
 interface DeadStockValueChartProps {
-  data: DeadStockItem[];
+  data: DeadStockItem[] | null | undefined;
 }
 
 const DeadStockValueChart = ({ data }: DeadStockValueChartProps) => {
+  // Return empty chart if no data
+  if (!data || data.length === 0) {
+    return (
+      <div>
+        <Typography variant="h6" gutterBottom>
+          Dead Stock Value by Product
+        </Typography>
+        <Typography>No data available for chart.</Typography>
+      </div>
+    );
+  }
+
   // Get top 10 items by total value
   const chartData = data
    .slice()
-   .sort((a, b) => b.total_value - a.total_value)
+   .sort((a, b) => b.totalValue - a.totalValue)
    .slice(0, 10);
 
   return (
@@ -43,7 +55,7 @@ const DeadStockValueChart = ({ data }: DeadStockValueChartProps) => {
           <YAxis />
           <Tooltip formatter={(value) => `$${Number(value).toFixed(2)}`} />
           <Legend />
-          <Bar dataKey="total_value" fill="#8884d8" name="Total Stock Value" />
+          <Bar dataKey="totalValue" fill="#8884d8" name="Total Stock Value" />
         </BarChart>
       </ResponsiveContainer>
     </>
