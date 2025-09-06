@@ -1,0 +1,41 @@
+{
+  "name": "smart-deadstock-backend",
+  "version": "1.0.0",
+  "description": "Node.js/Express backend for Smart Dead Stock Management Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node scripts/seedData.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "faker": "^6.6.6",
+    "helmet": "^7.1.0",
+    "joi": "^17.11.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "mongodb-memory-server": "^10.2.0",
+    "mongoose": "^8.0.3",
+    "openai": "^4.20.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "inventory",
+    "ai",
+    "deadstock"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

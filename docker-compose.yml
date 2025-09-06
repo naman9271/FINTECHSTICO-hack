@@ -2,39 +2,42 @@
 version: '3.8'
 
 services:
-  postgres-db:
-    image: postgres:15-alpine
-    container_name: deadstock-db
+  mongodb:
+    image: mongo:7.0
+    container_name: deadstock-mongodb
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: deadstock_db
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: deadstock_db
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mongodb_data:/data/db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d deadstock_db"]
-      interval: 5s
-      timeout: 5s
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://admin:password@localhost:27017/deadstock_db --quiet
+      interval: 10s
+      timeout: 10s
       retries: 5
 
-  fastapi-backend:
+  nodejs-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: fastapi-backend
+    container_name: nodejs-backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - /app/node_modules
     environment:
-      DATABASE_URL: "postgresql+asyncpg://user:password@postgres-db/deadstock_db"
-      OPENAI_API_KEY: "YOUR_API_KEY_HERE" # Replace with your actual LLM API key
+      NODE_ENV: development
+      MONGODB_URI: "mongodb://admin:password@mongodb:27017/deadstock_db?authSource=admin"
+      OPENAI_API_KEY: "YOUR_API_KEY_HERE" # Replace with your actual OpenAI API key
+      FRONTEND_URL: "http://localhost:3000"
     depends_on:
-      postgres-db:
+      mongodb:
         condition: service_healthy
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: npm run dev
 
   nextjs-frontend:
     build:
@@ -50,7 +53,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: "http://localhost:8000"
     depends_on:
-      - fastapi-backend
+      - nodejs-backend
 
 volumes:
-  postgres_data:
+  mongodb_data:
