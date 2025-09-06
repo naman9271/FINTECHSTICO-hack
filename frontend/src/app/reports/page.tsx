@@ -131,11 +131,11 @@ export default function Reports() {
 
   if (loading || !reportData) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-center h-64">
-            <div className="inline-flex h-8 w-8 animate-spin rounded-full border-2 border-slate-600 border-b-purple-500"></div>
+            <div className="inline-flex h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-b-purple-500"></div>
           </div>
         </div>
       </div>
@@ -143,17 +143,17 @@ export default function Reports() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
       <main className="container mx-auto px-6 py-8 lg:px-8">
         {/* Hero Section */}
         <div className="mb-8">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-white lg:text-4xl">
+            <h1 className="text-3xl font-bold text-gray-900 lg:text-4xl">
               Reports & Analytics
             </h1>
-            <p className="mt-2 text-lg text-slate-400">
+            <p className="mt-2 text-lg text-gray-600">
               Generate comprehensive reports and export your inventory insights
             </p>
           </div>
@@ -165,7 +165,7 @@ export default function Reports() {
             <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white"
+              className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900"
             >
               <option value="1month">Last Month</option>
               <option value="3months">Last 3 Months</option>
@@ -173,7 +173,7 @@ export default function Reports() {
               <option value="1year">Last Year</option>
             </select>
             
-            <Button variant="outline" className="border-slate-700 bg-slate-800/50">
+            <Button variant="outline" className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
               <Filter className="mr-2 h-4 w-4" />
               Advanced Filters
             </Button>
@@ -207,7 +207,7 @@ export default function Reports() {
             <Button
               onClick={handleScheduleReport}
               variant="outline"
-              className="border-slate-700 bg-slate-800/50"
+              className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
             >
               <Mail className="mr-2 h-4 w-4" />
               Schedule Report
@@ -217,50 +217,50 @@ export default function Reports() {
 
         {/* Summary Cards */}
         <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+          <Card className="border-gray-200 bg-white shadow-sm">
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Total Dead Stock Items</p>
-                  <p className="text-2xl font-bold text-white">{reportData.summary.totalProducts}</p>
+                  <p className="text-sm font-medium text-gray-600">Total Dead Stock Items</p>
+                  <p className="text-2xl font-bold text-gray-900">{reportData.summary.totalProducts}</p>
                 </div>
-                <Package className="h-8 w-8 text-purple-400" />
+                <Package className="h-8 w-8 text-purple-500" />
               </div>
             </div>
           </Card>
           
-          <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+          <Card className="border-gray-200 bg-white shadow-sm">
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Total Value</p>
-                  <p className="text-2xl font-bold text-white">{formatCurrency(reportData.summary.deadStockValue)}</p>
+                  <p className="text-sm font-medium text-gray-600">Total Value</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(reportData.summary.deadStockValue)}</p>
                 </div>
-                <DollarSign className="h-8 w-8 text-green-400" />
+                <DollarSign className="h-8 w-8 text-green-500" />
               </div>
             </div>
           </Card>
           
-          <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+          <Card className="border-gray-200 bg-white shadow-sm">
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Categories Affected</p>
-                  <p className="text-2xl font-bold text-white">{reportData.summary.categoriesAffected}</p>
+                  <p className="text-sm font-medium text-gray-600">Categories Affected</p>
+                  <p className="text-2xl font-bold text-gray-900">{reportData.summary.categoriesAffected}</p>
                 </div>
-                <BarChart3 className="h-8 w-8 text-blue-400" />
+                <BarChart3 className="h-8 w-8 text-blue-500" />
               </div>
             </div>
           </Card>
           
-          <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+          <Card className="border-gray-200 bg-white shadow-sm">
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Avg. Days Stagnant</p>
-                  <p className="text-2xl font-bold text-white">{reportData.summary.averageDaysStagnant}</p>
+                  <p className="text-sm font-medium text-gray-600">Avg. Days Stagnant</p>
+                  <p className="text-2xl font-bold text-gray-900">{reportData.summary.averageDaysStagnant}</p>
                 </div>
-                <Clock className="h-8 w-8 text-orange-400" />
+                <Clock className="h-8 w-8 text-orange-500" />
               </div>
             </div>
           </Card>
@@ -268,18 +268,18 @@ export default function Reports() {
 
         {/* Detailed Reports */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800/50">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="trends">Trends</TabsTrigger>
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-            <TabsTrigger value="items">Top Items</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 shadow-sm">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Overview</TabsTrigger>
+            <TabsTrigger value="trends" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Trends</TabsTrigger>
+            <TabsTrigger value="categories" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Categories</TabsTrigger>
+            <TabsTrigger value="items" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Top Items</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
             <div className="grid gap-6 lg:grid-cols-2">
-              <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+              <Card className="border-gray-200 bg-white shadow-sm">
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Dead Stock Distribution</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Dead Stock Distribution</h3>
                   <div className="space-y-4">
                     {reportData.categoryBreakdown.map((category, index) => {
                       const colors = ['bg-purple-500', 'bg-blue-500', 'bg-green-500', 'bg-orange-500', 'bg-pink-500'];
@@ -287,11 +287,11 @@ export default function Reports() {
                         <div key={category.category} className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <div className={`h-3 w-3 rounded-full ${colors[index % colors.length]}`}></div>
-                            <span className="text-sm text-slate-300">{category.category}</span>
+                            <span className="text-sm text-gray-700">{category.category}</span>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-medium text-white">{formatCurrency(category.value)}</p>
-                            <p className="text-xs text-slate-400">{category.items} items</p>
+                            <p className="text-sm font-medium text-gray-900">{formatCurrency(category.value)}</p>
+                            <p className="text-xs text-gray-500">{category.items} items</p>
                           </div>
                         </div>
                       );
@@ -300,34 +300,34 @@ export default function Reports() {
                 </div>
               </Card>
 
-              <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+              <Card className="border-gray-200 bg-white shadow-sm">
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Key Insights</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Insights</h3>
                   <div className="space-y-4">
-                    <div className="rounded-lg border border-orange-500/20 bg-orange-500/10 p-3">
+                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
                       <div className="flex items-center space-x-2">
-                        <AlertTriangle className="h-4 w-4 text-orange-400" />
-                        <span className="text-sm font-medium text-orange-400">Action Required</span>
+                        <AlertTriangle className="h-4 w-4 text-orange-600" />
+                        <span className="text-sm font-medium text-orange-800">Action Required</span>
                       </div>
-                      <p className="mt-1 text-xs text-orange-300">
+                      <p className="mt-1 text-xs text-orange-700">
                         Electronics category shows highest dead stock value at {formatCurrency(45000)}
                       </p>
                     </div>
-                    <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-3">
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
                       <div className="flex items-center space-x-2">
-                        <TrendingUp className="h-4 w-4 text-blue-400" />
-                        <span className="text-sm font-medium text-blue-400">Trend Analysis</span>
+                        <TrendingUp className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Trend Analysis</span>
                       </div>
-                      <p className="mt-1 text-xs text-blue-300">
+                      <p className="mt-1 text-xs text-blue-700">
                         Dead stock increased by 12% this quarter compared to last
                       </p>
                     </div>
-                    <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-3">
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-3">
                       <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4 text-green-400" />
-                        <span className="text-sm font-medium text-green-400">Opportunity</span>
+                        <Clock className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-800">Opportunity</span>
                       </div>
-                      <p className="mt-1 text-xs text-green-300">
+                      <p className="mt-1 text-xs text-green-700">
                         Clothing category has fastest resolution rate at 16 items/month
                       </p>
                     </div>
@@ -338,26 +338,26 @@ export default function Reports() {
           </TabsContent>
 
           <TabsContent value="trends">
-            <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white shadow-sm">
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-6">Dead Stock Trends Over Time</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Dead Stock Trends Over Time</h3>
                 <div className="space-y-4">
                   {reportData.trends.map((trend, index) => (
-                    <div key={trend.month} className="grid grid-cols-4 gap-4 p-4 rounded-lg bg-slate-800/30">
+                    <div key={trend.month} className="grid grid-cols-4 gap-4 p-4 rounded-lg bg-gray-50">
                       <div>
-                        <p className="text-sm font-medium text-slate-300">{trend.month}</p>
+                        <p className="text-sm font-medium text-gray-700">{trend.month}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-400">Dead Stock Value</p>
-                        <p className="text-sm font-medium text-white">{formatCurrency(trend.deadStockValue)}</p>
+                        <p className="text-xs text-gray-500">Dead Stock Value</p>
+                        <p className="text-sm font-medium text-gray-900">{formatCurrency(trend.deadStockValue)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-400">New Dead Stock</p>
-                        <p className="text-sm font-medium text-red-400">+{trend.newDeadStock} items</p>
+                        <p className="text-xs text-gray-500">New Dead Stock</p>
+                        <p className="text-sm font-medium text-red-600">+{trend.newDeadStock} items</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-400">Resolved</p>
-                        <p className="text-sm font-medium text-green-400">-{trend.resolvedItems} items</p>
+                        <p className="text-xs text-gray-500">Resolved</p>
+                        <p className="text-sm font-medium text-green-600">-{trend.resolvedItems} items</p>
                       </div>
                     </div>
                   ))}
@@ -367,26 +367,26 @@ export default function Reports() {
           </TabsContent>
 
           <TabsContent value="categories">
-            <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white shadow-sm">
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-6">Category Performance</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Category Performance</h3>
                 <div className="space-y-4">
                   {reportData.categoryBreakdown.map((category, index) => (
-                    <div key={category.category} className="p-4 rounded-lg bg-slate-800/30">
+                    <div key={category.category} className="p-4 rounded-lg bg-gray-50">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-white">{category.category}</h4>
-                        <Badge variant="outline" className="border-purple-500/20 bg-purple-500/10 text-purple-400">
+                        <h4 className="font-medium text-gray-900">{category.category}</h4>
+                        <Badge variant="outline" className="border-purple-200 bg-purple-50 text-purple-700">
                           {category.percentage.toFixed(1)}% of total
                         </Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-xs text-slate-400">Items</p>
-                          <p className="text-lg font-semibold text-white">{category.items}</p>
+                          <p className="text-xs text-gray-500">Items</p>
+                          <p className="text-lg font-semibold text-gray-900">{category.items}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-slate-400">Value</p>
-                          <p className="text-lg font-semibold text-white">{formatCurrency(category.value)}</p>
+                          <p className="text-xs text-gray-500">Value</p>
+                          <p className="text-lg font-semibold text-gray-900">{formatCurrency(category.value)}</p>
                         </div>
                       </div>
                     </div>
@@ -397,20 +397,20 @@ export default function Reports() {
           </TabsContent>
 
           <TabsContent value="items">
-            <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white shadow-sm">
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-6">Top Dead Stock Items</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Top Dead Stock Items</h3>
                 <div className="space-y-4">
                   {reportData.topDeadStockItems.map((item, index) => (
-                    <div key={item.name} className="p-4 rounded-lg bg-slate-800/30">
+                    <div key={item.name} className="p-4 rounded-lg bg-gray-50">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <h4 className="font-medium text-white">{item.name}</h4>
-                          <p className="text-sm text-slate-400">{item.category}</p>
+                          <h4 className="font-medium text-gray-900">{item.name}</h4>
+                          <p className="text-sm text-gray-500">{item.category}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-semibold text-white">{formatCurrency(item.value)}</p>
-                          <p className="text-xs text-orange-400">
+                          <p className="text-lg font-semibold text-gray-900">{formatCurrency(item.value)}</p>
+                          <p className="text-xs text-orange-600">
                             {item.daysSinceLastSale} days since last sale
                           </p>
                         </div>

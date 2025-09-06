@@ -164,8 +164,26 @@ Always be specific with numbers when available and provide context about what th
    */
   async getDataBasedAnswer(question) {
     try {
-      const deadStockData = await this.getDeadStockContext();
       const lowerQuestion = question.toLowerCase();
+      
+      // Handle greetings and simple messages
+      if (lowerQuestion.match(/^(hi|hello|hey|good morning|good afternoon|good evening)$/i)) {
+        return "Hello! I'm your AI assistant for Smart Dead Stock Management. I can help you analyze your inventory, identify dead stock, and provide insights. Try asking me about your inventory performance, dead stock analysis, or specific products!";
+      }
+      
+      if (lowerQuestion.includes('help') || lowerQuestion.includes('what can you do')) {
+        return `I can help you with:
+• Analyzing dead stock and inventory performance
+• Finding products with highest dead stock value
+• Identifying categories at risk
+• Showing items that haven't sold recently
+• Calculating potential losses
+• Providing inventory insights and trends
+
+Try asking: "What products have the highest dead stock value?" or "Which categories are most at risk?"`;
+      }
+      
+      const deadStockData = await this.getDeadStockContext();
       
       if (lowerQuestion.includes('highest') && lowerQuestion.includes('dead stock')) {
         const topItems = deadStockData.items.slice(0, 5);

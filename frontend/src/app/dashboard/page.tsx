@@ -154,7 +154,13 @@ export default function Dashboard() {
                 <Link key={index} href={feature.href}>
                   <Card className="p-8 hover:shadow-lg transition-shadow duration-300 border border-gray-200 bg-white h-full group cursor-pointer">
                     <div className="flex items-start space-x-4">
-                      <div className={`p-3 rounded-lg bg-${feature.color}-50 group-hover:bg-${feature.color}-100 transition-colors`}>
+                    <div className={`p-3 rounded-lg transition-colors ${
+                      feature.color === 'blue' ? 'bg-blue-50 group-hover:bg-blue-100' :
+                      feature.color === 'green' ? 'bg-green-50 group-hover:bg-green-100' :
+                      feature.color === 'purple' ? 'bg-purple-50 group-hover:bg-purple-100' :
+                      feature.color === 'orange' ? 'bg-orange-50 group-hover:bg-orange-100' :
+                      'bg-gray-50 group-hover:bg-gray-100'
+                    }`}>
                         {feature.icon}
                       </div>
                       <div className="flex-1">

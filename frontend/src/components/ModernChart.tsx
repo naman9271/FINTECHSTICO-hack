@@ -32,12 +32,12 @@ export function ModernChart({ data, title, totalValue, loading = false }: Modern
 
   const getBarColor = (index: number) => {
     const colors = [
-      'from-purple-500 to-pink-500',
-      'from-blue-500 to-cyan-500', 
-      'from-green-500 to-emerald-500',
-      'from-orange-500 to-red-500',
-      'from-indigo-500 to-purple-500',
-      'from-pink-500 to-rose-500'
+      'bg-gradient-to-r from-purple-500 to-pink-500',
+      'bg-gradient-to-r from-blue-500 to-cyan-500',
+      'bg-gradient-to-r from-green-500 to-emerald-500',
+      'bg-gradient-to-r from-orange-500 to-red-500',
+      'bg-gradient-to-r from-indigo-500 to-purple-500',
+      'bg-gradient-to-r from-pink-500 to-rose-500'
     ];
     return colors[index % colors.length];
   };
@@ -79,7 +79,7 @@ export function ModernChart({ data, title, totalValue, loading = false }: Modern
               </div>
               <div className="relative h-3 overflow-hidden rounded-full bg-slate-800">
                 <div 
-                  className={`h-full bg-gradient-to-r ${getBarColor(index)} transition-all duration-1000 ease-out`}
+                  className={`h-full ${getBarColor(index)} transition-all duration-1000 ease-out`}
                   style={{ 
                     width: `${(item.value / maxValue) * 100}%`,
                     animation: `slideIn 1s ease-out ${index * 0.1}s both`

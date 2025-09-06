@@ -40,7 +40,7 @@ const schemas = {
   }),
   
   nlQuery: Joi.object({
-    query: Joi.string().min(5).max(500).required()
+    query: Joi.string().min(1).max(500).required()
   })
 };
 

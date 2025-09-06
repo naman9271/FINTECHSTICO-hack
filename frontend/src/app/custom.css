@@ -1,8 +1,8 @@
 /* Custom grid background pattern */
 .bg-grid-pattern {
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
@@ -13,7 +13,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(15 23 42 / 0.5);
+  background: rgb(243 244 246);
   border-radius: 4px;
 }
 

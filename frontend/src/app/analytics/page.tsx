@@ -114,11 +114,11 @@ export default function Analytics() {
 
   if (loading || !analyticsData) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-center h-64">
-            <div className="inline-flex h-8 w-8 animate-spin rounded-full border-2 border-slate-600 border-b-purple-500"></div>
+            <div className="inline-flex h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-b-purple-500"></div>
           </div>
         </div>
       </div>
@@ -188,11 +188,11 @@ export default function Analytics() {
 
         {/* Analytics Tabs */}
         <Tabs defaultValue="trends" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200">
-            <TabsTrigger value="trends">Monthly Trends</TabsTrigger>
-            <TabsTrigger value="categories">Category Analysis</TabsTrigger>
-            <TabsTrigger value="risk">Risk Assessment</TabsTrigger>
-            <TabsTrigger value="predictions">Predictions</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 shadow-sm">
+            <TabsTrigger value="trends" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Monthly Trends</TabsTrigger>
+            <TabsTrigger value="categories" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Category Analysis</TabsTrigger>
+            <TabsTrigger value="risk" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Risk Assessment</TabsTrigger>
+            <TabsTrigger value="predictions" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Predictions</TabsTrigger>
           </TabsList>
 
           <TabsContent value="trends">
@@ -235,11 +235,11 @@ export default function Analytics() {
           </TabsContent>
 
           <TabsContent value="categories">
-            <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white shadow-sm">
               <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">Category Breakdown</h3>
-                  <Badge variant="outline" className="border-green-500/20 bg-green-500/10 text-green-400">
+                  <h3 className="text-lg font-semibold text-gray-900">Category Breakdown</h3>
+                  <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
                     <PieChart className="mr-1 h-3 w-3" />
                     By Value
                   </Badge>
@@ -257,14 +257,14 @@ export default function Analytics() {
                     return (
                       <div key={category.category} className="group">
                         <div className="mb-2 flex items-center justify-between">
-                          <span className="text-sm font-medium text-slate-300">{category.category}</span>
+                          <span className="text-sm font-medium text-gray-700">{category.category}</span>
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs text-slate-400">{category.count} items</span>
-                            <span className="text-sm text-slate-400">{category.percentage.toFixed(1)}%</span>
-                            <span className="text-sm font-medium text-white">{formatCurrency(category.value)}</span>
+                            <span className="text-xs text-gray-500">{category.count} items</span>
+                            <span className="text-sm text-gray-600">{category.percentage.toFixed(1)}%</span>
+                            <span className="text-sm font-medium text-gray-900">{formatCurrency(category.value)}</span>
                           </div>
                         </div>
-                        <div className="relative h-3 overflow-hidden rounded-full bg-slate-800">
+                        <div className="relative h-3 overflow-hidden rounded-full bg-gray-200">
                           <div 
                             className={`h-full bg-gradient-to-r ${colors[index % colors.length]} transition-all duration-1000 ease-out`}
                             style={{ 
@@ -282,61 +282,61 @@ export default function Analytics() {
 
           <TabsContent value="risk">
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+              <Card className="border-gray-200 bg-white shadow-sm">
                 <div className="p-6">
-                  <h3 className="mb-6 text-lg font-semibold text-white">Risk Distribution</h3>
+                  <h3 className="mb-6 text-lg font-semibold text-gray-900">Risk Distribution</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                        <span className="text-sm text-slate-300">Critical Risk</span>
+                        <span className="text-sm text-gray-700">Critical Risk</span>
                       </div>
-                      <span className="text-sm font-medium text-white">{analyticsData.riskAnalysis.criticalItems} items</span>
+                      <span className="text-sm font-medium text-gray-900">{analyticsData.riskAnalysis.criticalItems} items</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <div className="h-3 w-3 rounded-full bg-orange-500"></div>
-                        <span className="text-sm text-slate-300">High Risk</span>
+                        <span className="text-sm text-gray-700">High Risk</span>
                       </div>
-                      <span className="text-sm font-medium text-white">{analyticsData.riskAnalysis.highRiskItems} items</span>
+                      <span className="text-sm font-medium text-gray-900">{analyticsData.riskAnalysis.highRiskItems} items</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-                        <span className="text-sm text-slate-300">Medium Risk</span>
+                        <span className="text-sm text-gray-700">Medium Risk</span>
                       </div>
-                      <span className="text-sm font-medium text-white">{analyticsData.riskAnalysis.mediumRiskItems} items</span>
+                      <span className="text-sm font-medium text-gray-900">{analyticsData.riskAnalysis.mediumRiskItems} items</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                        <span className="text-sm text-slate-300">Low Risk</span>
+                        <span className="text-sm text-gray-700">Low Risk</span>
                       </div>
-                      <span className="text-sm font-medium text-white">{analyticsData.riskAnalysis.lowRiskItems} items</span>
+                      <span className="text-sm font-medium text-gray-900">{analyticsData.riskAnalysis.lowRiskItems} items</span>
                     </div>
                   </div>
                 </div>
               </Card>
 
-              <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+              <Card className="border-gray-200 bg-white shadow-sm">
                 <div className="p-6">
-                  <h3 className="mb-6 text-lg font-semibold text-white">Risk Recommendations</h3>
+                  <h3 className="mb-6 text-lg font-semibold text-gray-900">Risk Recommendations</h3>
                   <div className="space-y-4">
-                    <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3">
                       <div className="flex items-center space-x-2">
-                        <AlertTriangle className="h-4 w-4 text-red-400" />
-                        <span className="text-sm font-medium text-red-400">Immediate Action Required</span>
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <span className="text-sm font-medium text-red-800">Immediate Action Required</span>
                       </div>
-                      <p className="mt-1 text-xs text-red-300">
+                      <p className="mt-1 text-xs text-red-700">
                         {analyticsData.riskAnalysis.criticalItems} items need immediate liquidation strategies
                       </p>
                     </div>
-                    <div className="rounded-lg border border-orange-500/20 bg-orange-500/10 p-3">
+                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
                       <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4 text-orange-400" />
-                        <span className="text-sm font-medium text-orange-400">Monitor Closely</span>
+                        <Clock className="h-4 w-4 text-orange-600" />
+                        <span className="text-sm font-medium text-orange-800">Monitor Closely</span>
                       </div>
-                      <p className="mt-1 text-xs text-orange-300">
+                      <p className="mt-1 text-xs text-orange-700">
                         {analyticsData.riskAnalysis.highRiskItems} items should be reviewed weekly
                       </p>
                     </div>
@@ -347,21 +347,21 @@ export default function Analytics() {
           </TabsContent>
 
           <TabsContent value="predictions">
-            <Card className="border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white shadow-sm">
               <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">AI Predictions</h3>
-                  <Badge variant="outline" className="border-purple-500/20 bg-purple-500/10 text-purple-400">
+                  <h3 className="text-lg font-semibold text-gray-900">AI Predictions</h3>
+                  <Badge variant="outline" className="border-purple-200 bg-purple-50 text-purple-700">
                     <BarChart3 className="mr-1 h-3 w-3" />
                     Next Month
                   </Badge>
                 </div>
                 
                 <div className="grid gap-6 md:grid-cols-2">
-                  <div className="rounded-lg border border-slate-700 bg-slate-800/30 p-4">
-                    <h4 className="mb-2 text-sm font-medium text-slate-300">Predicted Dead Stock Value</h4>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(analyticsData.predictions.nextMonthDeadStock)}</p>
-                    <p className="mt-1 text-xs text-slate-400">
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <h4 className="mb-2 text-sm font-medium text-gray-700">Predicted Dead Stock Value</h4>
+                    <p className="text-2xl font-bold text-gray-900">{formatCurrency(analyticsData.predictions.nextMonthDeadStock)}</p>
+                    <p className="mt-1 text-xs text-gray-600">
                       {analyticsData.predictions.trendDirection === 'up' ? '↗' : analyticsData.predictions.trendDirection === 'down' ? '↘' : '→'} 
                       {analyticsData.predictions.trendDirection === 'up' ? ' Increasing trend' : 
                        analyticsData.predictions.trendDirection === 'down' ? ' Decreasing trend' : 
@@ -369,18 +369,18 @@ export default function Analytics() {
                     </p>
                   </div>
                   
-                  <div className="rounded-lg border border-slate-700 bg-slate-800/30 p-4">
-                    <h4 className="mb-2 text-sm font-medium text-slate-300">Model Confidence</h4>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <h4 className="mb-2 text-sm font-medium text-gray-700">Model Confidence</h4>
                     <div className="flex items-center space-x-2">
-                      <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-1000"
                           style={{ width: `${analyticsData.predictions.confidenceLevel}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium text-white">{analyticsData.predictions.confidenceLevel}%</span>
+                      <span className="text-sm font-medium text-gray-900">{analyticsData.predictions.confidenceLevel}%</span>
                     </div>
-                    <p className="mt-1 text-xs text-slate-400">Based on 12 months of data</p>
+                    <p className="mt-1 text-xs text-gray-600">Based on 12 months of data</p>
                   </div>
                 </div>
               </div>

@@ -38,28 +38,28 @@ export function StatsCard({
   const getTrendColor = () => {
     switch (trend) {
       case 'up':
-        return 'text-green-400 bg-green-500/10 border-green-500/20';
+        return 'text-green-700 bg-green-100 border-green-200';
       case 'down':
-        return 'text-red-400 bg-red-500/10 border-red-500/20';
+        return 'text-red-700 bg-red-100 border-red-200';
       default:
-        return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+        return 'text-gray-700 bg-gray-100 border-gray-200';
     }
   };
 
   return (
-    <Card className={`relative overflow-hidden border-slate-800/50 bg-slate-900/50 p-6 backdrop-blur-sm ${className}`}>
+    <Card className={`relative overflow-hidden border-gray-200 bg-white p-6 shadow-sm ${className}`}>
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50" />
       
       <div className="relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-purple-400">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600">
               {icon}
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-400">{title}</p>
-              <p className="text-2xl font-bold text-white">{value}</p>
+              <p className="text-sm font-medium text-gray-600">{title}</p>
+              <p className="text-2xl font-bold text-gray-900">{value}</p>
             </div>
           </div>
           
@@ -74,7 +74,7 @@ export function StatsCard({
         </div>
         
         {description && (
-          <p className="mt-3 text-xs text-slate-500">{description}</p>
+          <p className="mt-3 text-xs text-gray-500">{description}</p>
         )}
       </div>
     </Card>
