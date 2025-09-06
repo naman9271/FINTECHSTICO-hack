@@ -1,19 +1,22 @@
-import axios from 'axios';
+const axios = require('axios');
 
 // --- CONFIG ---
 const AIML_BASE_URL = process.env.AIML_SERVICE_URL || 'http://localhost:8000';
 
 // --- PREDICTION HANDLER ---
-export async function predictSpoilage(message: string): Promise<string> {
+async function predictSpoilage(message) {
   try {
     const foodItem = extractFoodItem(message);
     
     // Use API for milk spoilage prediction
     if (foodItem === 'milk') {
-      const res = await axios.post(`${AIML_BASE_URL}/predict_milk_spoilage`, { sku: 'whole_milk_1gal' });
-      const { prediction, probability, explanation } = res.data;
-      
-      return `🥛 *MILK SPOILAGE ANALYSIS*
+      try {
+        const res = await axios.post(`${AIML_BASE_URL}/predict_milk_spoilage`, { sku: 'whole_milk_1gal' });
+        const prediction = res.data.prediction;
+        const probability = res.data.probability;
+        const explanation = res.data.explanation;
+        
+        return `🥛 *MILK SPOILAGE ANALYSIS*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 *Status:* ${prediction.toUpperCase()}
@@ -30,17 +33,20 @@ ${explanation}
 
 🔍 Type *info milk* for storage tips
 🆘 Type *rescue* for donation options`;
+      } catch (apiError) {
+        console.log('API unavailable, using fallback prediction');
+      }
     }
     
-    // TODO: Add more API integrations as available
-    // Fallback: Enhanced hardcoded predictions
-    const predictions: any = {
+    // Enhanced hardcoded predictions
+    const predictions = {
       'apple': { days: 7, status: 'Fresh', confidence: 85, emoji: '🍎' },
       'banana': { days: 3, status: 'Ripening', confidence: 78, emoji: '🍌' },
       'tomato': { days: 5, status: 'Fresh', confidence: 82, emoji: '🍅' },
       'bread': { days: 4, status: 'Good', confidence: 75, emoji: '🍞' },
       'lettuce': { days: 5, status: 'Fresh', confidence: 80, emoji: '🥬' },
-      'cheese': { days: 10, status: 'Good', confidence: 88, emoji: '🧀' }
+      'cheese': { days: 10, status: 'Good', confidence: 88, emoji: '🧀' },
+      'milk': { days: 5, status: 'Fresh', confidence: 90, emoji: '🥛' }
     };
     
     const prediction = predictions[foodItem] || { 
@@ -67,7 +73,7 @@ ${explanation}
 🔍 Type *info ${foodItem}* for storage tips
 🆘 Type *rescue* for donation options`;
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Prediction error:', error.message);
     return `❌ *SERVICE TEMPORARILY UNAVAILABLE*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -82,12 +88,12 @@ We're experiencing technical difficulties with our prediction service.
 }
 
 // --- FOOD INFO HANDLER ---
-export async function getFoodInfo(message: string): Promise<string> {
+async function getFoodInfo(message) {
   try {
     const foodItem = extractFoodItem(message);
     
     // Enhanced hardcoded food information
-    const foodInfo: any = {
+    const foodInfo = {
       'apple': {
         storage: 'Refrigerate at 32-35°F (0-2°C)',
         shelf_life: '2-4 weeks refrigerated',
@@ -155,7 +161,7 @@ ${info.tips}
 🔮 Type *predict ${foodItem}* for spoilage prediction
 🆘 Type *rescue* for donation options`;
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Food info error:', error.message);
     return `❌ *INFORMATION SERVICE UNAVAILABLE*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -170,15 +176,16 @@ Unable to retrieve food information at this time.
 }
 
 // --- RESCUE OPTIONS HANDLER ---
-export async function getRescueOptions(message: string, location?: { lat: number, lng: number }): Promise<string> {
+async function getRescueOptions(message, location) {
   try {
     if (location) {
-      // Use API if location is provided
-      const res = await axios.post(`${AIML_BASE_URL}/nearby-ngos`, location);
-      const ngos = res.data.ngos || [];
-      
-      if (ngos.length === 0) {
-        return `📍 *NO RESCUE OPTIONS FOUND*
+      try {
+        // Use API if location is provided
+        const res = await axios.post(`${AIML_BASE_URL}/nearby-ngos`, location);
+        const ngos = res.data.ngos || [];
+        
+        if (ngos.length === 0) {
+          return `📍 *NO RESCUE OPTIONS FOUND*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 No food rescue organizations found in your area.
@@ -188,24 +195,24 @@ No food rescue organizations found in your area.
 🌐 *Visit our website for more options*
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-      }
-      
-      let response = `🆘 *NEARBY RESCUE ORGANIZATIONS*
+        }
+        
+        let response = `🆘 *NEARBY RESCUE ORGANIZATIONS*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📍 *Found ${ngos.length} organization(s) in your area:*
 
 `;
-      
-      ngos.forEach((ngo: any, idx: number) => {
-        response += `${idx + 1}. *${ngo.name}*
+        
+        ngos.forEach((ngo, idx) => {
+          response += `${idx + 1}. *${ngo.name}*
    📍 ${ngo.address}
    ⭐ Rating: ${ngo.rating || 'Not rated'}
    
 `;
-      });
-      
-      response += `━━━━━━━━━━━━━━━━━━━━━━━━━━
+        });
+        
+        response += `━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 *Donation Guidelines:*
 • Ensure food is safe for consumption
 • Package items properly and securely
@@ -213,8 +220,11 @@ No food rescue organizations found in your area.
 • Follow organization's pickup schedule
 
 📞 *Need help?* Contact support for assistance`;
-      
-      return response;
+        
+        return response;
+      } catch (apiError) {
+        console.log('API unavailable, using fallback rescue options');
+      }
     }
     
     // Fallback: Enhanced hardcoded options
@@ -258,7 +268,7 @@ No food rescue organizations found in your area.
     
     return response;
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Rescue options error:', error.message);
     return `❌ *RESCUE SERVICE UNAVAILABLE*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -274,111 +284,149 @@ Unable to access rescue organization database.
 }
 
 // --- HELP & DEFAULT RESPONSES ---
-export function getHelpMenu(): string {
-  return `🛠️ *RESQCART QUICK REFERENCE*
+function getHelpMenu() {
+  return `🛠️ *RESQCART COMMAND MENU*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 *How can I assist you today?*
 
-📦 *Predictions*
-• *predict [food]* — Get AI-powered spoilage prediction
+📦 *AI-Powered Predictions*
+• *predict [food]* — Get AI spoilage prediction with alerts
    _e.g., "predict apple"_
 
-📚 *Info & Tips*
+📚 *Food Information*
 • *info [food]* — Storage & shelf life guide
    _e.g., "info banana"_
 
-🤝 *Donate Food*
-• *donate* or *rescue* — Find local food donation organizations
-   _e.g., "donate" or "rescue"_
+🏪 *Dead Stock Marketplace*
+• *deadstock* — Manage slow-moving inventory
+• *deadstock define [item] [criteria]* — Set dead stock rules
+• *deadstock resell [item]* — Find resell options
+• *deadstock simulate [item]* — Simulate discount scenarios
 
-👋 *Welcome*
-• *hello* or *hi* — Get a warm welcome and introduction
+🗄️ *NL2SQL Data Queries*
+• *Show me items unsold in 90 days* — Natural language queries
+• *nl2sql* — Ask database questions in plain English
 
-🛠️ *Help & Support*
-• *help* or *menu* — Show this menu
-• *contact* — Contact support or send feedback
-• *what's new* or *whats new* — See the latest features
+💰 *Financial Command Center*
+• *finance* — View P&L and cash flow impact
+• *finance view* — Live profit & loss summary
+• *finance scenario [option]* — Compare outcomes
+
+🤝 *Food Rescue*
+• *donate* or *rescue* — Find local donation organizations
+
+👋 *General*
+• *hello* or *hi* — Welcome message
+• *contact* — Support information
+• *what's new* — Latest features
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 *How to use:*
-Just type a command, like "predict milk" or "info bread".
+Just type a command, like "predict milk" or "Show me items unsold in 90 days".
 
-🌱 *Together, let's reduce food waste!*
+🌱 *Together, let's reduce food waste and maximize profits!*
 `;
 }
 
-export function getWhatsNewMessage(): string {
+function getWhatsNewMessage() {
   return `🆕 *WHAT'S NEW AT RESQCART?*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✨ *Recent Improvements:*
-• Enhanced professional help and welcome messages
-• All commands now accept multiple alternatives (e.g., hi/hello, help/menu)
-• Improved donation directory and guidance
-• More food types supported for predictions and info
-• Case-insensitive command recognition for a smoother experience
+✨ *Latest Features:*
 
-🚀 *Upcoming Features:*
-• Personalized usage stats and impact summary
-• Location-based rescue and donation matching
-• More AI-powered food insights
+🤖 *AI-Powered Predictive Alerts*
+• WhatsApp notifications for at-risk inventory
+• Early-warning trends to prevent sales drops
+
+🏪 *Dead Stock Marketplace*
+• Define custom dead stock criteria
+• Resell/transfer options to other businesses
+• Discount simulation before taking action
+
+🗄️ *Natural Language Database Queries*
+• Ask questions in plain English
+• Auto-translates to SQL queries
+• Voice-enabled search support
+
+💰 *Financial Command Center*
+• Live P&L view of inventory
+• Storage costs and cash flow impact analysis
+• Scenario comparison for decision making
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 *Coming Soon:*
+• Advanced AI predictions for more products
 • Multi-language support
+• Integration with major inventory systems
 
 🔔 *Stay tuned for more updates!*
-━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
 }
 
-export function getWelcomeMessage(): string {
+function getWelcomeMessage() {
   return `👋 *WELCOME TO RESQCART!*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-*Empowering You to Fight Food Waste*
+*Your AI-Powered Inventory & Waste Management Assistant*
 
-Hi there! I’m your ResQCart assistant — here to help you:
-• Predict food spoilage with AI
-• Get expert storage tips
-• Donate surplus food to local organizations
-• And more!
+Hi there! I'm your ResQCart assistant with powerful new features:
 
-🌟 *Sustainability starts with small steps.*
+🤖 *AI Predictions* - Get spoilage alerts before it's too late
+🏪 *Dead Stock Marketplace* - Turn slow inventory into profits
+🗄️ *Smart Data Queries* - Ask questions in plain English
+💰 *Financial Insights* - Real-time P&L and impact analysis
 
-Type *help* to see what I can do, or try:
+🌟 *Transform your inventory management today!*
+
+Type *help* to see all commands, or try:
 • "predict tomato"
-• "info milk"
-• "donate"
+• "deadstock"
+• "Show me items unsold in 90 days"
+• "finance view"
 
-"Every meal saved is a win for the planet!" 🌍`;
+"Every meal saved is a win for the planet and your profits!" 🌍💰`;
 }
 
-export function getDefaultResponse(): string {
+function getDefaultResponse() {
   return `🤔 *COMMAND NOT RECOGNIZED*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 I didn't understand that command.
 
-📋 *Available Commands:*
-• *predict [food]* - Spoilage prediction
+📋 *Quick Commands:*
+• *predict [food]* - AI spoilage prediction
 • *info [food]* - Storage information
+• *deadstock* - Marketplace options
+• *finance* - Financial insights
 • *rescue* - Find donation options
 • *help* - Full command menu
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 *Examples:*
 • "predict apple"
-• "info banana"
-• "rescue"
+• "Show me items unsold in 90 days"
+• "deadstock simulate bread"
 
 ❓ Type *help* for detailed assistance`;
 }
 
 // --- HELPER: Extract food item from message ---
-function extractFoodItem(message: string): string {
+function extractFoodItem(message) {
   const words = message.split(' ');
   const commandIndex = words.findIndex(word => ['predict', 'info', 'spoilage', 'food'].includes(word));
   if (commandIndex !== -1 && commandIndex + 1 < words.length) {
     return words[commandIndex + 1];
   }
   return words[words.length - 1] || 'unknown';
-} 
+}
+
+module.exports = {
+  predictSpoilage,
+  getFoodInfo,
+  getRescueOptions,
+  getHelpMenu,
+  getWhatsNewMessage,
+  getWelcomeMessage,
+  getDefaultResponse
+};
