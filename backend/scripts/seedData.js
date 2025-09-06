@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 const moment = require('moment');
 require('dotenv').config();
 
 // Import models
 const { User, Product, Inventory, SalesOrder } = require('../models');
+const { connectDB } = require('../config/database');
 
 // Configuration
 const CONFIG = {
@@ -32,7 +33,7 @@ class DataSeeder {
       console.log('🌱 Starting data seeding process...');
       
       // Connect to MongoDB
-      await this.connectDB();
+      await connectDB();
       
       // Clear existing data
       await this.clearExistingData();
@@ -62,11 +63,7 @@ class DataSeeder {
     }
   }
   
-  async connectDB() {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/deadstock_db';
-    await mongoose.connect(mongoUri);
-    console.log('🗄️  Connected to MongoDB');
-  }
+  // Database connection is now handled by imported connectDB function
   
   async clearExistingData() {
     console.log('🧹 Clearing existing data...');
@@ -178,9 +175,9 @@ class DataSeeder {
           totalPrice: Math.round(quantitySold * unitPrice * 100) / 100,
           orderDate,
           customerInfo: {
-            name: faker.name.findName(),
+            name: faker.person.fullName(),
             email: faker.internet.email(),
-            location: faker.address.city()
+            location: faker.location.city()
           },
           status: this.randomChoice(['confirmed', 'shipped', 'delivered']),
           notes: Math.random() > 0.7 ? faker.lorem.sentence() : undefined

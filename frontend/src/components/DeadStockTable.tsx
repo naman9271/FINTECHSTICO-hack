@@ -3,17 +3,17 @@
 import { Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip } from '@mui/material';
 
 interface DeadStockItem {
-  product_id: number;
+  productId: string;
   sku: string;
-  product_name: string;
+  productName: string;
   category: string;
-  purchase_price: number;
-  selling_price: number;
+  purchasePrice: number;
+  sellingPrice: number;
   quantity: number;
-  total_value: number;
-  last_sale_date: string | null;
-  days_since_last_sale: number | null;
-  estimated_monthly_storage_cost: number;
+  totalValue: number;
+  lastSaleDate: string | null;
+  daysSinceLastSale: number | null;
+  monthlyStorageCost: number;
 }
 
 interface DeadStockTableProps {
@@ -58,17 +58,17 @@ export default function DeadStockTable({ items }: DeadStockTableProps) {
             </TableHead>
             <TableBody>
               {items.map((item) => {
-                const risk = getRiskLevel(item.days_since_last_sale);
+                const risk = getRiskLevel(item.daysSinceLastSale);
                 return (
-                  <TableRow key={item.product_id}>
+                  <TableRow key={item.productId}>
                     <TableCell>{item.sku}</TableCell>
-                    <TableCell>{item.product_name}</TableCell>
+                    <TableCell>{item.productName}</TableCell>
                     <TableCell>{item.category}</TableCell>
                     <TableCell align="right">{item.quantity}</TableCell>
-                    <TableCell align="right">{formatCurrency(item.total_value)}</TableCell>
-                    <TableCell>{formatDate(item.last_sale_date)}</TableCell>
-                    <TableCell align="right">{item.days_since_last_sale || 'N/A'}</TableCell>
-                    <TableCell align="right">{formatCurrency(item.estimated_monthly_storage_cost)}</TableCell>
+                    <TableCell align="right">{formatCurrency(item.totalValue)}</TableCell>
+                    <TableCell>{formatDate(item.lastSaleDate)}</TableCell>
+                    <TableCell align="right">{item.daysSinceLastSale || 'N/A'}</TableCell>
+                    <TableCell align="right">{formatCurrency(item.monthlyStorageCost)}</TableCell>
                     <TableCell>
                       <Chip label={risk.label} color={risk.color} size="small" />
                     </TableCell>

@@ -6,9 +6,9 @@ const queryService = require('../services/queryService');
 // POST /api/query - Process natural language queries
 router.post('/', validateRequest(schemas.nlQuery), async (req, res, next) => {
   try {
-    const { question } = req.body;
+    const { query } = req.body;
     
-    const result = await queryService.processNaturalLanguageQuery(question);
+    const result = await queryService.processNaturalLanguageQuery(query);
     
     res.json({
       success: true,

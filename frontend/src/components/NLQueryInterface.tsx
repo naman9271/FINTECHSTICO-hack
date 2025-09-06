@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { TextField, Button, Box, CircularProgress, Alert, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function NLQueryInterface() {
   const [query, setQuery] = useState('');
@@ -18,7 +18,7 @@ export default function NLQueryInterface() {
     setError('');
     setResult(null);
     try {
-      const response = await axios.post(`${API_URL}/api/query`, { question: query });
+      const response = await axios.post(`${API_URL}/api/query`, { query: query });
       if (response.data.error) {
         setError(response.data.error);
       } else {

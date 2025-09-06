@@ -8,7 +8,7 @@ import DeadStockTable from '../../components/DeadStockTable';
 import DeadStockValueChart from '../../components/DeadStockValueChart';
 import NLQueryInterface from '../../components/NLQueryInterface';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,7 +47,7 @@ export default function Dashboard() {
       try {
         setLoading(true);
         const response = await axios.get(`${API_URL}/api/deadstock`, {
-          params: { days_since_last_sale: 90, min_quantity: 1 }
+          params: { daysSinceLastSale: 90, minQuantity: 1 }
         });
         setData(response.data);
       } catch (err) {

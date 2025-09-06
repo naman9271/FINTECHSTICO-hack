@@ -7,16 +7,16 @@ const connectDB = async () => {
   try {
     let mongoURI = process.env.MONGODB_URI;
     
-    // If no MongoDB URI is provided or it's development, use in-memory MongoDB
-    if (!mongoURI || process.env.NODE_ENV === 'development') {
-      console.log('🔧 Starting in-memory MongoDB for development...');
+    // Only use in-memory MongoDB if no URI is provided
+    if (!mongoURI) {
+      console.log('🔧 No MongoDB URI provided, starting in-memory MongoDB...');
       mongod = await MongoMemoryServer.create();
       mongoURI = mongod.getUri();
+    } else {
+      console.log('🔗 Connecting to MongoDB Atlas...');
     }
     
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       maxPoolSize: 10, // Maintain up to 10 socket connections
       serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
