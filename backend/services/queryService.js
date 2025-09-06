@@ -1,11 +1,10 @@
-const OpenAI = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { Product, Inventory, SalesOrder } = require('../models');
 
 class QueryService {
   constructor() {
-    this.openai = process.env.OPENAI_API_KEY ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    }) : null;
+    this.gemini = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+    this.model = this.gemini ? this.gemini.getGenerativeModel({ model: "gemini-pro" }) : null;
   }
   
   /**
@@ -13,38 +12,215 @@ class QueryService {
    */
   async processNaturalLanguageQuery(question) {
     try {
-      // If OpenAI is not configured, fall back to predefined queries
-      if (!this.openai) {
-        return this.handlePredefinedQueries(question);
-      }
-      
-      // Generate MongoDB aggregation pipeline using AI
-      const pipeline = await this.generateMongoQuery(question);
-      
-      if (!pipeline) {
-        return {
-          query: question,
-          results: [],
-          error: 'Could not generate a valid query from the question'
-        };
-      }
-      
-      // Execute the query
-      const results = await this.executeQuery(pipeline);
+      // Always try to get actual data first
+      const answer = await this.getDataBasedAnswer(question);
       
       return {
         query: question,
-        pipeline: JSON.stringify(pipeline, null, 2),
-        results,
+        answer: answer,
         error: null
       };
       
     } catch (error) {
+      console.error('Error processing query:', error);
       return {
         query: question,
-        results: [],
-        error: `Error processing query: ${error.message}`
+        answer: "I'm sorry, I'm having trouble accessing your data right now. Please try again later.",
+        error: error.message
       };
+    }
+  }
+  
+  /**
+   * Generate answer using Google Gemini
+   */
+  async generateAnswerWithGemini(question) {
+    try {
+      // Get current dead stock data to provide context
+      const deadStockData = await this.getDeadStockContext();
+      
+      const prompt = `
+You are an AI assistant for a Smart Dead Stock Management Platform. 
+Answer the user's question about their inventory and dead stock data based on the following context:
+
+DEAD STOCK DATA SUMMARY:
+${JSON.stringify(deadStockData.summary, null, 2)}
+
+SAMPLE DEAD STOCK ITEMS (Top 10):
+${JSON.stringify(deadStockData.items.slice(0, 10), null, 2)}
+
+USER QUESTION: ${question}
+
+Please provide a helpful, accurate answer based on the data above. If the question asks for specific numbers, calculations, or trends, use the actual data provided. Be conversational and provide actionable insights where possible.
+
+If the question is asking about:
+- "highest dead stock value" or "most expensive": Focus on items with highest totalValue
+- "categories at risk": Group by category and show which have most dead stock
+- "items not sold": Look at daysSinceLastSale values
+- "total potential loss": Sum up relevant values from the data
+
+Always be specific with numbers when available and provide context about what the numbers mean for the business.
+`;
+
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+      
+    } catch (error) {
+      console.error('Error with Gemini API:', error);
+      // Instead of generic response, try to answer based on available data
+      return await this.getDataBasedAnswer(question);
+    }
+  }
+
+  /**
+   * Get current dead stock context for AI responses
+   */
+  async getDeadStockContext() {
+    try {
+      const pipeline = [
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'productId',
+            foreignField: '_id',
+            as: 'product'
+          }
+        },
+        { $unwind: '$product' },
+        {
+          $lookup: {
+            from: 'salesorders',
+            let: { productId: '$productId' },
+            pipeline: [
+              { $match: { $expr: { $eq: ['$productId', '$$productId'] } } },
+              { $sort: { orderDate: -1 } },
+              { $limit: 1 }
+            ],
+            as: 'lastSale'
+          }
+        },
+        {
+          $addFields: {
+            lastSaleDate: { $arrayElemAt: ['$lastSale.orderDate', 0] },
+            totalValue: { $multiply: ['$quantity', '$product.purchasePrice'] },
+            monthlyStorageCost: { $multiply: ['$storageCostPerDay', 30] }
+          }
+        },
+        {
+          $addFields: {
+            daysSinceLastSale: {
+              $cond: {
+                if: { $ifNull: ['$lastSaleDate', false] },
+                then: {
+                  $floor: {
+                    $divide: [
+                      { $subtract: [new Date(), '$lastSaleDate'] },
+                      86400000
+                    ]
+                  }
+                },
+                else: null
+              }
+            }
+          }
+        },
+        {
+          $match: {
+            $or: [
+              { lastSaleDate: { $exists: false } },
+              { lastSaleDate: null },
+              { lastSaleDate: { $lte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) } }
+            ]
+          }
+        },
+        { $sort: { totalValue: -1 } },
+        { $limit: 50 }
+      ];
+
+      const items = await Inventory.aggregate(pipeline);
+      
+      const summary = {
+        totalItems: items.length,
+        totalDeadStockValue: items.reduce((sum, item) => sum + (item.totalValue || 0), 0),
+        averageDaysSinceLastSale: items.reduce((sum, item) => sum + (item.daysSinceLastSale || 0), 0) / items.length,
+        categoriesAffected: [...new Set(items.map(item => item.product?.category).filter(Boolean))],
+        totalMonthlyStorageCost: items.reduce((sum, item) => sum + (item.monthlyStorageCost || 0), 0)
+      };
+
+      return { summary, items };
+      
+    } catch (error) {
+      console.error('Error getting dead stock context:', error);
+      return { 
+        summary: { totalItems: 0, totalDeadStockValue: 0 }, 
+        items: [] 
+      };
+    }
+  }
+  
+  /**
+   * Get data-based answer when Gemini API fails
+   */
+  async getDataBasedAnswer(question) {
+    try {
+      const deadStockData = await this.getDeadStockContext();
+      const lowerQuestion = question.toLowerCase();
+      
+      if (lowerQuestion.includes('highest') && lowerQuestion.includes('dead stock')) {
+        const topItems = deadStockData.items.slice(0, 5);
+        let answer = "Here are the products with the highest dead stock value:\n\n";
+        topItems.forEach((item, index) => {
+          answer += `${index + 1}. ${item.product?.productName || 'Unknown Product'} - $${(item.totalValue || 0).toLocaleString()}\n`;
+        });
+        return answer;
+      }
+      
+      if (lowerQuestion.includes('categories') && lowerQuestion.includes('risk')) {
+        const categoryStats = {};
+        deadStockData.items.forEach(item => {
+          const category = item.product?.category || 'Unknown';
+          if (!categoryStats[category]) {
+            categoryStats[category] = { count: 0, value: 0 };
+          }
+          categoryStats[category].count++;
+          categoryStats[category].value += item.totalValue || 0;
+        });
+        
+        let answer = "Categories most at risk for dead stock:\n\n";
+        Object.entries(categoryStats)
+          .sort((a, b) => b[1].value - a[1].value)
+          .slice(0, 5)
+          .forEach(([category, stats], index) => {
+            answer += `${index + 1}. ${category}: ${stats.count} items worth $${stats.value.toLocaleString()}\n`;
+          });
+        return answer;
+      }
+      
+      if (lowerQuestion.includes('6 months') || lowerQuestion.includes('haven\'t sold')) {
+        const oldItems = deadStockData.items.filter(item => 
+          !item.daysSinceLastSale || item.daysSinceLastSale > 180
+        );
+        let answer = `Found ${oldItems.length} items that haven't sold in 6+ months:\n\n`;
+        oldItems.slice(0, 10).forEach((item, index) => {
+          const days = item.daysSinceLastSale || 'Never';
+          answer += `${index + 1}. ${item.product?.productName || 'Unknown'} - Last sold: ${days === 'Never' ? 'Never' : days + ' days ago'}\n`;
+        });
+        return answer;
+      }
+      
+      if (lowerQuestion.includes('total') && (lowerQuestion.includes('loss') || lowerQuestion.includes('value'))) {
+        const totalValue = deadStockData.summary.totalDeadStockValue;
+        const totalItems = deadStockData.summary.totalItems;
+        return `Total potential loss from dead stock: $${totalValue.toLocaleString()} across ${totalItems} items. This represents inventory that hasn't moved in the past 90+ days.`;
+      }
+      
+      // Default response with actual data
+      return `Based on your current inventory data: You have ${deadStockData.summary.totalItems} dead stock items worth $${deadStockData.summary.totalDeadStockValue.toLocaleString()}. Average days since last sale: ${Math.round(deadStockData.summary.averageDaysSinceLastSale || 0)} days.`;
+      
+    } catch (error) {
+      console.error('Error getting data-based answer:', error);
+      return "I'm having trouble accessing your inventory data right now. Please try again later.";
     }
   }
   

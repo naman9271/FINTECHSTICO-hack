@@ -99,11 +99,23 @@ class DataSeeder {
       const product = new Product({
         userId,
         sku: `SKU-${String(i + 1).padStart(4, '0')}`,
-        productName: this.generateProductName(),
+        name: this.generateProductName(),
         category: this.randomChoice(CONFIG.CATEGORIES),
-        purchasePrice: Math.round(purchasePrice * 100) / 100,
-        sellingPrice: Math.round(purchasePrice * markupMultiplier * 100) / 100,
-        description: faker.commerce.productDescription()
+        cost: Math.round(purchasePrice * 100) / 100,
+        price: Math.round(purchasePrice * markupMultiplier * 100) / 100,
+        quantity: this.randomInt(0, 500),
+        description: faker.commerce.productDescription(),
+        supplier: faker.company.name(),
+        lowStockThreshold: this.randomInt(5, 25),
+        status: this.randomChoice(['active', 'active', 'active', 'inactive']), // mostly active
+        tags: this.randomChoice([
+          ['bestseller'], 
+          ['new'], 
+          ['sale'], 
+          ['seasonal'], 
+          [], 
+          ['featured']
+        ])
       });
       
       await product.save();
@@ -166,7 +178,7 @@ class DataSeeder {
         const orderDate = moment().subtract(daysAgo, 'days').toDate();
         const quantitySold = this.randomInt(1, 10);
         const priceVariation = this.randomFloat(0.9, 1.1); // ±10% price variation
-        const unitPrice = Math.round(product.sellingPrice * priceVariation * 100) / 100;
+        const unitPrice = Math.round(product.price * priceVariation * 100) / 100;
         
         const salesOrder = new SalesOrder({
           productId: product._id,

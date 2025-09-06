@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema({
     trim: true,
     maxlength: 50
   },
-  productName: {
+  name: {
     type: String,
     required: true,
     trim: true,
@@ -25,38 +25,62 @@ const productSchema = new mongoose.Schema({
     trim: true,
     maxlength: 100
   },
-  purchasePrice: {
+  cost: {
     type: Number,
     required: true,
     min: 0
   },
-  sellingPrice: {
+  price: {
     type: Number,
     required: true,
+    min: 0
+  },
+  quantity: {
+    type: Number,
+    default: 0,
     min: 0
   },
   description: {
     type: String,
     maxlength: 1000
   },
-  isActive: {
-    type: Boolean,
-    default: true
-  }
+  supplier: {
+    type: String,
+    maxlength: 200
+  },
+  lastRestocked: {
+    type: Date
+  },
+  lowStockThreshold: {
+    type: Number,
+    default: 10,
+    min: 0
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'discontinued'],
+    default: 'active'
+  },
+  tags: [{
+    type: String,
+    trim: true
+  }]
 }, {
   timestamps: true
 });
 
 // Virtual for profit margin
 productSchema.virtual('profitMargin').get(function() {
-  if (this.sellingPrice <= 0) return 0;
-  return ((this.sellingPrice - this.purchasePrice) / this.sellingPrice) * 100;
+  if (this.price && this.cost) {
+    return ((this.price - this.cost) / this.price * 100).toFixed(2);
+  }
+  return 0;
 });
 
 // Indexes for performance
 productSchema.index({ userId: 1, sku: 1 });
 productSchema.index({ category: 1 });
-productSchema.index({ productName: 'text', description: 'text' });
+productSchema.index({ name: 'text', description: 'text' });
 
 // Ensure virtual fields are serialized
 productSchema.set('toJSON', { virtuals: true });

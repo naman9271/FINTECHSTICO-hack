@@ -13,6 +13,7 @@ const deadstockRoutes = require('./routes/deadstock');
 const queryRoutes = require('./routes/query');
 const recommendationRoutes = require('./routes/recommendations');
 const healthRoutes = require('./routes/health');
+const productsRoutes = require('./routes/products');
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/deadstock', deadstockRoutes);
 app.use('/api/query', queryRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/products', productsRoutes);
 
 // Error handling middleware (should be last)
 app.use(errorHandler);
